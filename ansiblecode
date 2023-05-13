@@ -1,0 +1,23 @@
+-   hosts: ansible
+    
+    tasks:
+    -   name: create image
+        command: docker build -t app:v2 .
+    -   name: create tag to push in docket hub
+        command: docker tag app:v1 vikasr79/app:v4
+    -   name: push docker image 
+        command: docker push vikasr79/app:v4
+
+-   hosts: docker 
+    
+    tasks:
+    -   name: stop container 
+        command: docker rm -f app-server
+        
+    -   name: remove image 
+        command: docker rmi vikasr79/app:v4
+        ignore_errors: yes
+    
+    -   name: run container
+        command: docker run -d --name app-server -p 8086:8080 vikasr79/app:v4
+        
